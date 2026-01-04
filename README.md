@@ -2,7 +2,7 @@
 This repository is a small tool built for experimenting with Virtuagym QR payloads. Use it only where you have permission. The code is provided for research and security-hardening purposes.
 
 # How to run
-Login into your gym's website using the virtuagym software, in my case, https://<your gym slug>.virtuagym.com/
+Login into your gym's website using the virtuagym software, in my case, ``https://<your gym slug>.virtuagym.com/``
 You can likely find this URL by looking for a login option inside your gym landing page or password recovery in-app.
 
 Then, login, and get the following cookies:
