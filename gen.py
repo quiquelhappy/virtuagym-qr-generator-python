@@ -6,6 +6,7 @@ import secrets
 import time
 from typing import Optional
 from Crypto.Cipher import AES
+import qrcode
 
 # ----------------------------
 # Exact equivalents of CryptLib
@@ -68,6 +69,8 @@ if __name__ == "__main__":
     parser.add_argument("--vg_member_id", type=int, required=True, help="VG member ID")
     parser.add_argument("--superclub_id", type=int, required=True, help="Superclub ID")
     parser.add_argument("--club_member_id", type=str, default=None, help="Club member ID (optional)")
+    parser.add_argument("--qr", action="store_true", help="Render the final string as an ASCII QR to stdout")
+    parser.add_argument("--qr-image", type=str, default=None, help="Path to save PNG QR image")
 
     args = parser.parse_args()
 
@@ -77,4 +80,21 @@ if __name__ == "__main__":
         club_member_id=args.club_member_id
     )
 
-    print(qr)
+    # If requested, render QR to terminal as ASCII
+    if args.qr:
+        qr_obj = qrcode.QRCode(border=2)
+        qr_obj.add_data(qr)
+        qr_obj.make(fit=True)
+        matrix = qr_obj.get_matrix()
+        for row in matrix:
+            print("".join("██" if cell else "  " for cell in row))
+    else:
+        print(qr)
+
+    # If requested, save a PNG image of the QR code
+    if args.qr_image:
+        qr_obj = qrcode.QRCode(border=2)
+        qr_obj.add_data(qr)
+        qr_obj.make(fit=True)
+        img = qr_obj.make_image(fill_color="black", back_color="white")
+        img.save(args.qr_image)
