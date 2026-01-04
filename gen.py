@@ -82,7 +82,12 @@ if __name__ == "__main__":
 
     # If requested, render QR to terminal as ASCII
     if args.qr:
-        qr_obj = qrcode.QRCode(border=2)
+        qr_obj = qrcode.QRCode(
+            version=1,
+            error_correction=qrcode.constants.ERROR_CORRECT_L,
+            box_size=2,
+            border=2
+        )
         qr_obj.add_data(qr)
         qr_obj.make(fit=True)
         matrix = qr_obj.get_matrix()
@@ -93,7 +98,12 @@ if __name__ == "__main__":
 
     # If requested, save a PNG image of the QR code
     if args.qr_image:
-        qr_obj = qrcode.QRCode(border=2)
+        qr_obj = qrcode.QRCode(
+            version=1,
+            error_correction=qrcode.constants.ERROR_CORRECT_L,
+            box_size=2,
+            border=2
+        )
         qr_obj.add_data(qr)
         qr_obj.make(fit=True)
         img = qr_obj.make_image(fill_color="black", back_color="white")
