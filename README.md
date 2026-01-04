@@ -11,14 +11,14 @@ Then, login, and get the following cookies:
 
 then, run the script with:
 ```
-python3 gen.py --vg_member_id <VG_MEMBER_ID> --superclub_id <SUPERCLUB_ID>
+python3 gen.py --vg_member_id <virtuagym_u> --superclub_id <virtuagym_pref_club>
 ```
 
 if this doesn't work, try
 ```
-python3 gen.py --vg_member_id <VG_MEMBER_ID> --superclub_id <SUPERCLUB_ID> --club_member_id <CLUB_MEMBER_ID>
+python3 gen.py --vg_member_id <virtuagym_u> --superclub_id <virtuagym_pref_club> --club_member_id <CLUB_MEMBER_ID>
 ```
-I'm not sure on where to get ``your_club_member_id``, it might show up at ``https://<your gym slug>.virtuagym.com/user/<your account slug>/settings/sportschool``
+I'm not sure on where to get ``CLUB_MEMBER_ID``, it might show up at ``https://<your gym slug>.virtuagym.com/user/<your account slug>/settings/sportschool``
 
 # Installation
 
@@ -36,7 +36,7 @@ By default, it shows the raw QR code data in console, but you can use:
 Both options can be combined; for example the command below prints an ASCII QR and writes `out.png`:
 
 ```bash
-python3 gen.py --vg_member_id 21860781 --superclub_id 61212 --qr --qr-image out.png
+python3 gen.py --vg_member_id <virtuagym_u> --superclub_id <virtuagym_pref_club> --club_member_id <CLUB_MEMBER_ID> --qr --qr-image out.png
 ```
 
 # Output
