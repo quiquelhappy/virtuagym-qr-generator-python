@@ -11,11 +11,11 @@ Then, login, and get the following cookies:
 
 then, run the script with:
 ```
-python generate_qr.py --vg_member_id your_virtuagym_u --superclub_id your_virtuagym_pref_club
+python gen.py --vg_member_id your_virtuagym_u --superclub_id your_virtuagym_pref_club
 ```
 
 if this doesn't work, try
 ```
-python generate_qr.py --vg_member_id your_virtuagym_u --superclub_id your_virtuagym_pref_club --club_member_id your_club_member_id
+python gen.py --vg_member_id your_virtuagym_u --superclub_id your_virtuagym_pref_club --club_member_id your_club_member_id
 ```
 I'm not sure on where to get ``your_club_member_id``, it might show up at ``https://<your gym slug>.virtuagym.com/user/<your account slug>/settings/sportschool``

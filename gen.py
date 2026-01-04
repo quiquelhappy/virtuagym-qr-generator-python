@@ -4,6 +4,7 @@ import hashlib
 import json
 import secrets
 import time
+from typing import Optional
 from Crypto.Cipher import AES
 
 # ----------------------------
@@ -28,8 +29,8 @@ def pkcs5_pad(data: bytes) -> bytes:
 def generate_vg_qr(
     vg_member_id: int,
     superclub_id: int,
-    club_member_id: str | None = None,
-    timestamp_ms: int | None = None,
+    club_member_id: Optional[str] = None,
+    timestamp_ms: Optional[int] = None,
 ):
     if timestamp_ms is None:
         timestamp_ms = int(time.time() * 1000)
