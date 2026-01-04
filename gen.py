@@ -31,14 +31,14 @@ def generate_vg_qr(
     vg_member_id: int,
     superclub_id: int,
     club_member_id: Optional[str] = None,
-    timestamp_ms: Optional[int] = None,
+    timestamp_s: Optional[int] = None,
 ):
-    if timestamp_ms is None:
-        timestamp_ms = int(time.time() * 1000)
+    if timestamp_s is None:
+        timestamp_s = int(time.time())
 
     # Build payload in exact same order as Java code to ensure identical JSON
     payload = {}
-    payload["timestamp"] = timestamp_ms
+    payload["timestamp"] = timestamp_s
     payload["vg_member_id"] = vg_member_id
     if club_member_id is not None:
         payload["club_member_id"] = club_member_id
