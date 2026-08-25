@@ -25,12 +25,7 @@ def pkcs5_unpad(data: bytes) -> bytes:
 # QR payload decryption
 # ----------------------------
 
-def decrypt_vg_qr(qr_string: str, superclub_id: int) -> dict:
-    if qr_string.startswith("vg_checkin_qr="):
-        qr_string = qr_string[len("vg_checkin_qr="):]
-
-    ciphertext = base64.b64decode(qr_string)
-
+def decrypt_with_superclub_id(ciphertext: bytes, superclub_id: int) -> dict:
     key_number = ((65 + superclub_id) * 754 * superclub_id) + 9476221
     aes_key = derive_aes_key(str(key_number))
 
@@ -45,12 +40,31 @@ def decrypt_vg_qr(qr_string: str, superclub_id: int) -> dict:
     json_payload = plaintext[16:]  # drop the (corrupted) 16-byte prefix block
     return json.loads(json_payload.decode("utf-8"))
 
+def brute_force_superclub_id(ciphertext: bytes, max_id: int) -> tuple[int, dict]:
+    for superclub_id in range(max_id + 1):
+        try:
+            payload = decrypt_with_superclub_id(ciphertext, superclub_id)
+        except (ValueError, UnicodeDecodeError, json.JSONDecodeError):
+            continue
+        return payload, superclub_id
+    raise ValueError(f"No superclub_id in range 0..{max_id} decrypted this QR")
+
+def decrypt_vg_qr(qr_string: str, superclub_id: Optional[int], brute_force_max: int) -> tuple[dict, int]:
+    if qr_string.startswith("vg_checkin_qr="):
+        qr_string = qr_string[len("vg_checkin_qr="):]
+
+    ciphertext = base64.b64decode(qr_string)
+
+    if superclub_id is not None:
+        return decrypt_with_superclub_id(ciphertext, superclub_id), superclub_id
+    return brute_force_superclub_id(ciphertext, brute_force_max)
+
 def read_qr_from_image(path: str) -> str:
     img = cv2.imread(path)
     if img is None:
         raise ValueError(f"Could not read image: {path}")
     detector = cv2.QRCodeDetector()
-    data, points, _ = detector.detectAndDecode(img)
+    data, _, _ = detector.detectAndDecode(img)
     if not data:
         raise ValueError(f"No QR code detected in image: {path}")
     return data
@@ -64,14 +78,23 @@ if __name__ == "__main__":
     source = parser.add_mutually_exclusive_group(required=True)
     source.add_argument("--image", type=str, help="Path to a QR code PNG/image to read")
     source.add_argument("--string", type=str, help="Raw QR string (with or without 'vg_checkin_qr=' prefix)")
-    parser.add_argument("--superclub_id", type=int, required=True, help="Superclub ID used to derive the AES key")
+    parser.add_argument(
+        "--superclub_id", type=int, default=None,
+        help="Superclub ID used to derive the AES key. If omitted, brute-forces it (0..--brute_force_max)."
+    )
+    parser.add_argument(
+        "--brute_force_max", type=int, default=200_000,
+        help="Upper bound to brute-force superclub_id up to, when --superclub_id is not given (default: 200000)"
+    )
 
     args = parser.parse_args()
 
     qr_string = read_qr_from_image(args.image) if args.image else args.string
 
-    payload = decrypt_vg_qr(qr_string, args.superclub_id)
+    payload, superclub_id = decrypt_vg_qr(qr_string, args.superclub_id, args.brute_force_max)
 
+    if args.superclub_id is None:
+        print(f"superclub_id:   {superclub_id} (brute-forced)")
     print(f"timestamp:      {payload.get('timestamp')}")
     print(f"vg_member_id:   {payload.get('vg_member_id')}")
     print(f"club_member_id: {payload.get('club_member_id')}")
